@@ -17,7 +17,7 @@ export default function viewport(element) {
     intersectionObserver.observe(element)
     return {
         destroy() {
-            intersectionObserver.unobserver(element);
+            intersectionObserver.unobserve(element);
         }
     }
 }

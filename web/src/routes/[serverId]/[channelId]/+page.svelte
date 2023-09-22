@@ -1,14 +1,11 @@
 <script>
     import MediaCard from '../../../components/MediaCard.svelte';
-    import { browser } from '$app/environment';
 	export let data;
     let playbackRate = 1;
     data = data.arr
 </script>
 
 
-{#if browser}
-{#key window.href}
 {#if data.length}
 <div class="text-center text-2xl sticky top-0 z-10 bg-black opacity-75">
     Playback Rate: {playbackRate}x
@@ -23,6 +20,4 @@
 <div class="flex items-center justify-center h-screen">
    <div class="bg-black text-2xl font-bold py-40 px-48 rounded-lg"> No Content Available </div>
 </div>
-{/if}
-{/key}
 {/if}
