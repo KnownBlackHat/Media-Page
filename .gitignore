@@ -13,3 +13,4 @@ vite.config.ts.timestamp-*
 env
 __pycache__
 /__pycache___
+*.db

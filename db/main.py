@@ -13,17 +13,27 @@ app = CustomFastAPI()
 @app.on_event('startup')
 async def start():
     app.db = await aiosqlite.connect('media.db')
-    await app.db.execute("create table if not exists channels (server_id bigint primary key, channel_id, channel_name text)")
+    await app.db.execute("create table if not exists channels (server_id bigint, channel_id bigint, channel_name text)")
     await app.db.execute("create table if not exists media (server_id bigint, channel_id bigint, link text, unique (server_id, channel_id, link))")
 
 
-@app.get('/get/{server_id}/channels')
+@app.get('/get/servers')
+async def get_servers():
+    query = await app.db.execute("select server_id from channels")
+    resp = await query.fetchall()
+    data = set()
+    for id, in resp:
+        data.add(id)
+    return list(data)
+
+
+@app.get('/get/{server_id}')
 async def get_channels(server_id: int):
     query = await app.db.execute("select channel_id, channel_name from channels where server_id = ?", (server_id,))
     resp = await query.fetchall()
     data = []
     for channel, name in resp:
-        data.append({'channel': channel, 'name': name})
+        data.append({'id': channel, 'name': name})
     return data
 
 
