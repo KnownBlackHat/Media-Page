@@ -1,7 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
 
-// TODO: INTEGRATE AUTH 
-
 export async function load({ params, fetch }) {
     const resp = await fetch(`//127.0.0.1:8888/get/${params.serverId}`)
     if (resp.status !== 200)

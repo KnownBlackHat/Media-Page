@@ -4,14 +4,14 @@
     let playbackRate = 1;
 </script>
 
-<div class="flex items-center text-center space-x-5 sticky top-0">
-    {#each data.arr as {name, id}}
-        <a href={id}>{name}</a>
+<div class="flex bg-black opacity-90 items-center text-center justify-between flex-wrap p-3 rounded-lg space-x-5 sticky top-0">
+    {#each data.channels as {name, id}}
+        <a class='font-underline' href={id}>{name}</a>
     {/each}
 </div>
 
 {#if data.arr.length}
-<div class="text-center text-2xl sticky top-0 z-10 bg-black opacity-75">
+<div class="text-center text-xl bg-black opacity-90">
     Playback Rate: {playbackRate}x
     <input type="range" min="0.1" max="10" step="0.1" bind:value={playbackRate} class="w-full"/>
 </div>

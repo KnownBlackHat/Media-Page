@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
 </script>
 
-<div class="grid grid-cols-5 gap-5">
+<div class="grid md:grid-cols-5 md:gap-5 mx-2">
     {#each data.guilds as {id, icon, name}}
         <a href='{$page.url.pathname}/{id}'>
             <div class="text-center border-white border-2 overflow-auto rounded-md">

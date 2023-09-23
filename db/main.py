@@ -23,7 +23,7 @@ async def get_servers():
     resp = await query.fetchall()
     data = set()
     for id, in resp:
-        data.add(id)
+        data.add(str(id))
     return list(data)
 
 
@@ -33,7 +33,7 @@ async def get_channels(server_id: int):
     resp = await query.fetchall()
     data = []
     for channel, name in resp:
-        data.append({'id': channel, 'name': name})
+        data.append({'id': str(channel), 'name': name})
     return data
 
 

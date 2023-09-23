@@ -1,13 +1,8 @@
 <script>
 	import '../app.css';
-    import { navigating } from '$app/stores';
 </script>
 
-{#if $navigating}
-   Navigating from {$navigating.from.url.pathname} to {$navigating.to.url.pathname}
-{:else}
-    <slot />
-{/if}
+<slot />
 
 <style>
 	:global(body) {
