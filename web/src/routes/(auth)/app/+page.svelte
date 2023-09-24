@@ -3,6 +3,11 @@
     import { page } from '$app/stores';
 </script>
 
+{#if data.guilds.length === 0}
+<div class="flex items-center justify-center h-screen">
+   <div class="bg-black text-2xl font-bold py-40 px-48 rounded-lg"> You are not in any of the premium server </div>
+</div>
+{:else}
 <div class="grid md:grid-cols-5 md:gap-5 mx-2">
     {#each data.guilds as {id, icon, name}}
         <a href='{$page.url.pathname}/{id}'>
@@ -19,3 +24,4 @@
         </a>
     {/each}
 </div>
+{/if}

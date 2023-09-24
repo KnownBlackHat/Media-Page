@@ -21,10 +21,11 @@ export async function load({ params, fetch, cookies }) {
     if (!validation) {
         throw redirect(302, '/') 
     }
-    const resp1 = await fetch(`//127.0.0.1:8888/get/${params.serverId}/${params.channelId}`)
+    const resp1_img = await fetch(`//127.0.0.1:8888/get/${params.serverId}/${params.channelId}/images`)
+    const resp1_vid = await fetch(`//127.0.0.1:8888/get/${params.serverId}/${params.channelId}/videos`)
     const resp2 = await fetch(`//127.0.0.1:8888/get/${params.serverId}`)
-    if (resp1.status !== 200 || resp2.status !== 200)
+    if (resp1_img.status !== 200 || resp1_vid.status !== 200 || resp2.status !== 200)
         throw error(404)
-    return {arr: await resp1.json(), channels: await resp2.json()}
+    return {images: await resp1_img.json(), videos: await resp1_vid.json(), channels: await resp2.json()}
 }
 

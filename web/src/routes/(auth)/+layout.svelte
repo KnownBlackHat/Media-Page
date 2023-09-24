@@ -3,7 +3,8 @@
     import { goto } from '$app/navigation';
 </script>
 
-<div class="flex justify-between items-center mb-2 bg-pink-800 opacity-80">
+<div class="flex justify-between items-center mb-2 opacity-80"
+    style="background-color: #{data.accent_color? data.accent_color : 'cc0066'}">
     <a href="/app">
     <img
         src={`//cdn.discordapp.com/avatars/${data.id}/${data.avatar}.jpg`}
@@ -14,6 +15,7 @@
     <div class="ml-10 text-3xl">{data.global_name}</div>
     <button
         class="bg-black text-white m-4 rounded-md text-center p-2"
+        title="logout"
         on:click={() => {
             goto('/logout', {invalidateAll: true});
         }}>Logout</button

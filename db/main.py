@@ -1,4 +1,6 @@
 from typing import Optional
+import re
+
 from fastapi import FastAPI
 import aiosqlite
 
@@ -47,13 +49,25 @@ async def get_channel_name(channel_id: int):
     return data
 
 
-@app.get('/get/{server_id}/{channel_id}')
-async def get_links(server_id: int, channel_id: int):
+@app.get('/get/{server_id}/{channel_id}/videos')
+async def get_links_vids(server_id: int, channel_id: int):
     query = await app.db.execute("select link from media where server_id = ? and channel_id = ?", (server_id, channel_id))
     resp = await query.fetchall()
     data = []
     for name, in resp:
-        data.append(name)
+        if not re.match(r'.*\.(png|jpg|jpeg|gif|webp)', name):
+            data.append(name)
+    return data
+
+
+@app.get('/get/{server_id}/{channel_id}/images')
+async def get_links_imgs(server_id: int, channel_id: int):
+    query = await app.db.execute("select link from media where server_id = ? and channel_id = ?", (server_id, channel_id))
+    resp = await query.fetchall()
+    data = []
+    for name, in resp:
+        if re.match(r'.*\.(png|jpg|jpeg|gif|webp)', name):
+            data.append(name)
     return data
 
 
