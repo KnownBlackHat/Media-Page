@@ -28,7 +28,7 @@ function format(seconds) {
 </script>
 
 <div transition:fade class="rounded border-2 h-fit border-white overflow-hidden" role="button" tabindex="0"
-on:mouseenter={() => {downloadBtn.style.visibility="visible"}}
+on:mouseenter={() => {downloadBtn.style.visibility="visible"; media.controls=false}}
 on:mouseleave={() => {downloadBtn.style.visibility="hidden"}}
 >
     <div class="relative invisible" bind:this={downloadBtn}>
