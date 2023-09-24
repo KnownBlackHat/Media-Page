@@ -2,7 +2,7 @@
 import { goto } from "$app/navigation";
 export let data;
 const scopes = 'identify guilds guilds.members.read';
-const redirect_uri = 'http://localhost:5173/callback';
+const redirect_uri = data.redirect_uri;
 const client_id = data.client_id
 </script>
 

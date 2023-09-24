@@ -6,7 +6,7 @@ export async function load ({ cookies, fetch, request }) {
     if (!code) {
         throw redirect(307, '/');
     }
-    const resp = await fetch('//localhost:5173/api/v1/login', {
+    const resp = await fetch('/api/v1/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

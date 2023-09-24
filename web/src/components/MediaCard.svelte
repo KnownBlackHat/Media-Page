@@ -9,6 +9,7 @@ import Play from './PlayIcon.svelte';
 import Pause from './PauseIcon.svelte';
 import FullScreen from './FullScreenIcon.svelte';
 import Download from './DownloadIcon.svelte';
+import Favourite from './FavouriteIcon.svelte';
 
 let downloadBtn;
 let paused=true;
@@ -36,6 +37,9 @@ on:mouseleave={() => {downloadBtn.style.visibility="hidden"}}
         <button title="Download" class="bg-gray-700 text-white p-1 rounded h-10" href={src} target="_blank" download>
             <Download/>
         </button>
+    </span>
+    <span class="absolute top-0 left-0 p-1">
+        <button title="Favourite" class="bg-pink-300 text-white p-1 rounded h-10" on:click={() => {}}><Favourite/></button>
     </span>
     </div>
 {#if src.match(/\.(jpe?g|png|gif|webp)/)}
