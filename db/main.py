@@ -15,6 +15,7 @@ app = CustomFastAPI()
 @app.on_event('startup')
 async def start():
     app.db = await aiosqlite.connect('media.db')
+    await app.db.execute("create table if not exists servers (server_id bigint, premium_role_id bigint)")
     await app.db.execute("create table if not exists channels (server_id bigint, channel_id bigint, channel_name text)")
     await app.db.execute("create table if not exists media (server_id bigint, channel_id bigint, link text, unique (server_id, channel_id, link))")
     await app.db.execute("create table if not exists favourite (server_id bigint, user_id bigint, link text, favorite boolean)")
@@ -166,3 +167,27 @@ async def get_favourites(server_id: int, user_id: int, images_only: bool = False
             if not re.match(r'.*\.(png|jpg|jpeg|gif|webp)', link):
                 data.append({'link': link, 'favourite': favourite})
         return data
+
+
+@app.get('/get/{server_id}/premium_role_id')
+async def get_premium_role_id(server_id: int):
+    query = await app.db.execute("select premium_role_id from servers where server_id = ?", (server_id,))
+    id = await query.fetchone()
+    if id:
+        return {'success': True, 'id': id[0]}
+    else:
+        return {'success': False, 'error': 'No premium role id found for this server'}
+
+
+@app.get('/modify/{server_id}/premium_role_id')
+async def modify_premium_role_id(server_id: int, premium_role_id: int):
+    query = await app.db.execute("select premium_role_id from servers where server_id = ?", (server_id,))
+    id = await query.fetchone()
+    if id:
+        await app.db.execute("update servers set premium_role_id = ? where server_id = ?", (premium_role_id, server_id))
+        await app.db.commit()
+        return {'success': True, 'updated': True}
+    else:
+        await app.db.execute("insert into servers (server_id, premium_role_id) values (?, ?)", (server_id, premium_role_id))
+        await app.db.commit()
+        return {'success': True, 'updated': False}
