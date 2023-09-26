@@ -89,6 +89,20 @@ async def get_links_imgs(server_id: int, channel_id: int, user_id: Optional[int]
     return await get_links(server_id, channel_id, user_id, images_only=True)
 
 
+@app.get('/modify/{server_id}/{premium_role_id}/premium_role')
+async def modify_role(server_id: int, premium_role_id: int):
+    query = await app.db.execute("select premium_role_id from servers where server_id = ?", (server_id,))
+    id = await query.fetchone()
+    if id:
+        await app.db.execute("update servers set premium_role_id = ? where server_id = ?", (premium_role_id, server_id))
+        await app.db.commit()
+        return {'success': True, 'updated': True}
+    else:
+        await app.db.execute("insert into servers (server_id, premium_role_id) values (?, ?)", (server_id, premium_role_id))
+        await app.db.commit()
+        return {'success': True, 'updated': False}
+
+
 @app.get('/modify/{server_id}/{channel_id}')
 async def modify(server_id: int, channel_id: int, link: Optional[str] = None,
                  channel_name: Optional[str] = None):
@@ -174,7 +188,7 @@ async def get_premium_role_id(server_id: int):
     query = await app.db.execute("select premium_role_id from servers where server_id = ?", (server_id,))
     id = await query.fetchone()
     if id:
-        return {'success': True, 'id': id[0]}
+        return {'success': True, 'id': str(id[0])}
     else:
         return {'success': False, 'error': 'No premium role id found for this server'}
 
