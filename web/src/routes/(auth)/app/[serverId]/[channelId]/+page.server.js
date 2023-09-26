@@ -1,5 +1,4 @@
-import { error, redirect } from "@sveltejs/kit";
-import { ROLE_ID } from "$env/static/private";
+import { error } from "@sveltejs/kit";
 
 const validateUserRole = async (token, roleId, serverId, fetch) => {
     const resp = await fetch(`https://discord.com/api/v10/users/@me/guilds/${serverId}/member`, {
@@ -17,10 +16,11 @@ const validateUserRole = async (token, roleId, serverId, fetch) => {
 export async function load({ params, fetch, cookies }) {
     const token = cookies.get('token')
     const user_id = cookies.get('user_id')
-    const validation = await validateUserRole(token, ROLE_ID, params.serverId, fetch)
-    if (!validation) {
-        throw redirect(302, '/') 
-    }
+    const resp = await fetch(`//127.0.0.1:8888/get/${params.serverId}/premium_role_id`) 
+    const { id } = await resp.json()
+    if (!token || !id) throw error(403, "You don't have premium membership")
+    const validation = await validateUserRole(token, id, params.serverId, fetch)
+    if (!validation) throw error(403, "You don't have premium membership")
     let resp1_img
     let resp1_vid
     if (params.channelId === 'favourites') {
