@@ -15,6 +15,8 @@ export async function load({ cookies, fetch }) {
 		throw redirect(302, '/login');
 	} else {
         const user_info = await get_user_info(fetch, token);
+        const { id } = user_info;
+        cookies.set('user_id', id, { path: '/' });
         return user_info;
     }
 }

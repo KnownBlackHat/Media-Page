@@ -5,7 +5,7 @@
 
 <div class="flex justify-between items-center mb-2 opacity-80"
     style="background-color: #{data.accent_color? data.accent_color : 'cc0066'}">
-    <a href="/app">
+    <a href="..">
     {#if data.avatar}
     <img title="Go back"
         src={`//cdn.discordapp.com/avatars/${data.id}/${data.avatar}.jpg`}

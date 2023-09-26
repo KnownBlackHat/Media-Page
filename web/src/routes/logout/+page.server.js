@@ -20,5 +20,6 @@ export async function load({ cookies, fetch }) {
     })
     if (rep.status === 200)
         cookies.delete('token')
+        cookies.delete('user_id')
     throw redirect(308, '/')
 }
