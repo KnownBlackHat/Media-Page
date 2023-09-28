@@ -16,6 +16,7 @@ app = CustomFastAPI()
 async def start():
     app.db = await aiosqlite.connect('media.db')
     await app.db.execute("create table if not exists servers (server_id bigint, premium_role_id bigint)")
+    await app.db.execute("create table if not exists registered_channels (server_id bigint, channel_id bigint)")
     await app.db.execute("create table if not exists channels (server_id bigint, channel_id bigint, channel_name text)")
     await app.db.execute("create table if not exists media (server_id bigint, channel_id bigint, link text, unique (server_id, channel_id, link))")
     await app.db.execute("create table if not exists favourite (server_id bigint, user_id bigint, link text, favorite boolean)")
@@ -54,7 +55,6 @@ async def get_channel_name(channel_id: int):
 async def get_links(server_id: int, channel_id: int, user_id: Optional[int] = None, images_only: bool = False):
     if not user_id:
         return {'error': 'No user id provided'}
-    # query = await app.db.execute("select link from media where server_id = ? and channel_id = ?", (server_id, channel_id))
     query_with_favourite = await app.db.execute(
             "select media.link, favourite.favorite from media left join favourite on media.server_id = favourite.server_id and media.link = favourite.link and favourite.user_id = ? where media.server_id = ? and media.channel_id = ?",
             (user_id, server_id, channel_id))
@@ -87,20 +87,6 @@ async def get_links_vids(server_id: int, channel_id: int, user_id: Optional[int]
 @app.get('/get/{server_id}/{channel_id}/images')
 async def get_links_imgs(server_id: int, channel_id: int, user_id: Optional[int] = None):
     return await get_links(server_id, channel_id, user_id, images_only=True)
-
-
-@app.get('/modify/{server_id}/{premium_role_id}/premium_role')
-async def modify_role(server_id: int, premium_role_id: int):
-    query = await app.db.execute("select premium_role_id from servers where server_id = ?", (server_id,))
-    id = await query.fetchone()
-    if id:
-        await app.db.execute("update servers set premium_role_id = ? where server_id = ?", (premium_role_id, server_id))
-        await app.db.commit()
-        return {'success': True, 'updated': True}
-    else:
-        await app.db.execute("insert into servers (server_id, premium_role_id) values (?, ?)", (server_id, premium_role_id))
-        await app.db.commit()
-        return {'success': True, 'updated': False}
 
 
 @app.get('/modify/{server_id}/{channel_id}')
@@ -193,8 +179,8 @@ async def get_premium_role_id(server_id: int):
         return {'success': False, 'error': 'No premium role id found for this server'}
 
 
-@app.get('/modify/{server_id}/premium_role_id')
-async def modify_premium_role_id(server_id: int, premium_role_id: int):
+@app.get('/modify/{server_id}/{premium_role_id}/premium_role')
+async def modify_role(server_id: int, premium_role_id: int):
     query = await app.db.execute("select premium_role_id from servers where server_id = ?", (server_id,))
     id = await query.fetchone()
     if id:
@@ -205,3 +191,25 @@ async def modify_premium_role_id(server_id: int, premium_role_id: int):
         await app.db.execute("insert into servers (server_id, premium_role_id) values (?, ?)", (server_id, premium_role_id))
         await app.db.commit()
         return {'success': True, 'updated': False}
+
+
+@app.get('/modify/{server_id}/{channel_id}/register')
+async def regiter_channel(server_id: int, channel_id: int):
+    query = await app.db.execute("select channel_id from registered_channels where server_id = ? and channel_id = ?", (server_id, channel_id))
+    id = await query.fetchone()
+    if id:
+        return {'success': False, 'error': 'Channel already registered'}
+    else:
+        await app.db.execute("insert into registered_channels (server_id, channel_id) values (?, ?)", (server_id, channel_id))
+        await app.db.commit()
+        return {'success': True}
+
+
+@app.get('/get/{server_id}/{channel_id}/registered')
+async def get_registered(server_id: int, channel_id: int):
+    query = await app.db.execute("select channel_id from registered_channels where server_id = ? and channel_id = ?", (server_id, channel_id))
+    id = await query.fetchone()
+    if id:
+        return {'success': True}
+    else:
+        return {'success': False, 'error': 'Channel not registered'}

@@ -1,7 +1,10 @@
+import { redirect } from "@sveltejs/kit";
+
 const get_user_guilds = async (fetch, token) => {
 	const user_guilds = await fetch('https://discord.com/api/v10/users/@me/guilds', {
 		headers: { Authorization: token }
 	});
+    if (user_guilds.status !== 200) throw redirect(307, '/login')
 	return await user_guilds.json();
 };
 

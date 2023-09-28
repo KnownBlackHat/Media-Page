@@ -9,7 +9,7 @@
 <div class="flex items-center text-center list text-xg underline justify-between flex-wrap p-3 rounded-lg space-x-5 sticky top-0">
         <a class='font-boldhover:text-xl text-sm capitalize' href={'favourites'}>favourites</a>
     {#each data.channels as {name, id}}
-        <a class='font-bold hover:text-xl text-sm capitalize' href={id}>{name}</a>
+        <a class='font-bold text-sm capitalize' href={id}>{name}</a>
     {/each}
 </div>
 </div>

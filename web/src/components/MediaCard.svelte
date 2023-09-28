@@ -12,6 +12,7 @@ import Download from './DownloadIcon.svelte';
 import Favourite from './FavouriteIcon.svelte';
 import SeekForward from './SeekForwardIcon.svelte';
 import SeekBackward from './SeekBackwardIcon.svelte';
+import VolumeButton from './VolumeButton.svelte';
 
 let paused=true;
 let duration=0;
@@ -99,32 +100,35 @@ on:keydown={(e) => {
         }}}
 bind:this={parent}
 >
-    <div class="relative">
-    <span class="absolute top-0 right-0 p-1" class:invisible={!controlsVisiblity}>
-        <a title="Download" class="text-white p-1 rounded h-10" href={src} target="_blank" download>
-            <Download/>
-        </a>
-    </span>
-    {#if notification}
-    <span id="Notification" class="flex justify-center items-center absolute bg-black top-96 rounded h-20 opacity-50 text-2xl left-[50%] p-3">
-    {#if notification}
-        {#if notification === 'Playing'}
-            <Play/>
-        {:else if notification === "Paused"}
-            <Pause/>
-        {:else if notification === "Seek Forward"}
-            <SeekForward/>
-        {:else if notification === "Seek Backward"}
-            <SeekBackward/>
-        {:else}
-            {notification}
+    <div>
+    <div class="relative" id="top-block">
+        <div class="absolute top-0 right-0 p-1" class:invisible={!controlsVisiblity}>
+            <button title="Download" class="text-white p-1 rounded h-10" on:click={() => window.open(src)} target="_blank" download>
+                <Download/>
+            </button>
+        </div>
+        {#if notification}
+        <div id="Notification" class="flex justify-center items-center absolute bg-black top-96 rounded h-20 opacity-50 text-2xl left-[50%] p-3">
+        {#if notification}
+            {#if notification === 'Playing'}
+                <Play/>
+            {:else if notification === "Paused"}
+                <Pause/>
+            {:else if notification === "Seek Forward"}
+                <SeekForward/>
+            {:else if notification === "Seek Backward"}
+                <SeekBackward/>
+            {:else}
+                {notification}
+            {/if}
         {/if}
-    {/if}
-    </span>
-    {/if}
-    <span class="absolute top-0 left-0 p-1" class:invisible={!controlsVisiblity}>
-        <button title="Favourite" class="text-white p-1 rounded h-10 text-red-500" on:click={() => {}}><Favourite {src} {favourite}/></button>
-    </span>
+        </div>
+        {/if}
+        <div class="absolute top-0 left-0 p-1" class:invisible={!controlsVisiblity}>
+            <button title="Favourite" class="text-white p-1 rounded h-10 text-red-500" on:click={() => {}}><Favourite {src} {favourite}/></button>
+        </div>
+    </div>
+
 {#if src.match(/\.(jpe?g|png|gif|webp)/)}
     <div class="bg-black inset-0"> 
 
@@ -146,7 +150,7 @@ bind:this={parent}
     }}/>
     </div>
 {:else}
-    <div>
+    <div id='video-player'>
     <video async class="h-60 w-full rounded bg-black" data-src={src} media-id={index} preload="auto" playsinline loop
         use:viewport
         on:error={e => {
@@ -171,18 +175,27 @@ bind:this={parent}
         <track kind="captions" />
     </video>
     </div>
-    <span class="flex absolute bottom-0 right-0 left-0 z-20 justify-between items-center px-2" title="Player Controls" class:invisible={!controlsVisiblity}>
-    <button class="text-white p-1 rounded h-10" title={paused? 'Play' : 'Pause'} on:click={() => {paused ? media.play() : media.pause()}}>{#if paused}<Play/> {:else} <Pause/> {/if}</button>
-    <span>{format(currentTime)}</span>
-    <input class="w-full mx-2" type="range" min="0" max={duration} title="Seek" step="0.01" bind:value={currentTime} />
-    <span>{format(duration)}</span>
-    <div class="mx-2 text-white rounded p-1" title="Playback Rate"
-    on:click={() => {playbackRate === 3.0 ? playbackRate=1 : playbackRate++}} role="button" tabindex="0"
-    on:keydown={(e) => {if (e.key === "Enter") {playbackRate === 3.0 ? playbackRate=1 : playbackRate++}}}>
-         {playbackRate}x
-     </div>
-    <button class="text-white p-1 rounded h-10 mx-2" title="Full Screen" on:click={togglefullscreen}><FullScreen/></button>
-    </span>
+    <div class="relative" id="lower-block" class:invisible={!controlsVisiblity}>
+        <div class="absolute bottom-0 left-0 right-0 w-full my-2">
+            <div id="duration" class="flex mx-1">
+                {format(currentTime)}
+                <input class="w-full mx-2" type="range" min="0" max={duration} title="Seek" step="0.01" bind:value={currentTime} />
+                {format(duration)}
+            </div>
+            <div class="flex justify-between items-center px-1" title="Player Controls">
+                <button class="text-white rounded h-5 inline-block" title={paused? 'Play' : 'Pause'} on:click={() => {paused ? media.play() : media.pause()}}>{#if paused}<Play/> {:else} <Pause/> {/if}</button>
+                <div class="mx-2 text-white rounded inline-block" title="Playback Rate"
+                on:click={() => {playbackRate === 3.0 ? playbackRate=1 : playbackRate++}} role="button" tabindex="0"
+                on:keydown={(e) => {if (e.key === "Enter") {playbackRate === 3.0 ? playbackRate=1 : playbackRate++}}}>
+                     {playbackRate}x
+                 </div>
+                 {#if media}
+                <VolumeButton {media}/>
+                {/if}
+                <button class="text-white rounded h-5 mx-2" title="Full Screen" on:click={togglefullscreen}><FullScreen/></button>
+            </div>
+        </div>
+    </div>
 {/if}
 </div>
 </div>
