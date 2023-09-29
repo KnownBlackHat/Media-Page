@@ -108,11 +108,6 @@ bind:this={parent}
                 <Download/>
             </button>
         </div>
-<div class="relative">
-  <div class="absolute inset-0 flex items-center justify-center z-50">
-    <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
-  </div>
-</div>
         {#if notification}
         <div id="Notification" class="flex justify-center items-center absolute bg-black top-96 rounded h-20 opacity-50 text-2xl left-[50%] p-3">
             {#if notification === 'Playing'}
@@ -154,10 +149,11 @@ bind:this={parent}
     }}/>
     </div>
 {:else}
-    <div id='video-player'>
+    <div id='video-player' class='relative'>
     <video async class="h-60 w-full rounded bg-black" data-src={src} media-id={index} preload="auto" playsinline loop
         use:viewport
         on:waiting={() => {loading=true}}
+        on:loadstart={() => {loading=true}}
         on:canplaythrough={() => {loading=false}}
         on:loadeddata={() => {loading=false}}
         on:enterViewport={e => {
@@ -175,7 +171,11 @@ bind:this={parent}
         on:click={(e) => {e.target.paused ? e.target.play() : e.target.pause()}}
                 >
         <track kind="captions" />
+        <source type="video/mp4" />
     </video>
+    <div id="loading" class="absolute top-0 left-0 right-0 z-90 bottom-0 flex justify-center items-center bg-black bg-opacity-50" class:invisible={!loading}>
+        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
     </div>
     <div class="relative" id="lower-block" class:invisible={!controlsVisiblity}>
         <div class="absolute bottom-0 left-0 right-0 w-full">

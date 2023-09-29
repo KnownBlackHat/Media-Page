@@ -21,7 +21,7 @@
     <div title='page index' class="flex items-center text-center list text-xl justify-between overflow-y-scroll bg-black text-white p-3 rounded-lg space-x-5">
     <span/>
     {#each Array(data.total_pages) as _, idx}
-        <a href={idx+1} class:text-red-500={idx+1 === current_page} class='text-sm hover:bg-white hover:text-black p-2 rounded-lg'>{idx+1}</a>
+        <a href={idx+1} class:text-black={idx+1 === current_page} class:bg-white={idx+1 === current_page} class='text-sm hover:bg-white hover:text-black p-2 rounded-lg'>{idx+1}</a>
     {/each}
     </div>
     <div class="flex justify-center m-2 space-x-5">
