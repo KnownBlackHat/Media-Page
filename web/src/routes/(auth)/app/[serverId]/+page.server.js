@@ -6,6 +6,6 @@ export async function load({ params, fetch }) {
         throw error(404)
     const channels = await resp.json()
     if (!channels.length) throw error(404)
-    throw redirect(308, `${params.serverId}/${channels[0].id}`)
+    throw redirect(308, `/app/${params.serverId}/${channels[0].id}`)
 }
 

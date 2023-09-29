@@ -23,6 +23,7 @@ let controlsVisiblity=true;
 let notification;
 let playbackRate=1;
 let timeoutCanceler;
+let loading=false;
 
 function format(seconds) {
 		if (isNaN(seconds)) return '...';
@@ -107,9 +108,13 @@ bind:this={parent}
                 <Download/>
             </button>
         </div>
+<div class="relative">
+  <div class="absolute inset-0 flex items-center justify-center z-50">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+</div>
         {#if notification}
         <div id="Notification" class="flex justify-center items-center absolute bg-black top-96 rounded h-20 opacity-50 text-2xl left-[50%] p-3">
-        {#if notification}
             {#if notification === 'Playing'}
                 <Play/>
             {:else if notification === "Paused"}
@@ -121,7 +126,6 @@ bind:this={parent}
             {:else}
                 {notification}
             {/if}
-        {/if}
         </div>
         {/if}
         <div class="absolute top-0 left-0 p-1" class:invisible={!controlsVisiblity}>
@@ -153,16 +157,14 @@ bind:this={parent}
     <div id='video-player'>
     <video async class="h-60 w-full rounded bg-black" data-src={src} media-id={index} preload="auto" playsinline loop
         use:viewport
-        on:error={e => {
-            if (!e.target.src.startsWith("http")) return;
-            setTimeout(() => {
-                e.target.load()
-            }, 1000);
-            }}
+        on:waiting={() => {loading=true}}
+        on:canplaythrough={() => {loading=false}}
+        on:loadeddata={() => {loading=false}}
         on:enterViewport={e => {
             if (e.target.src) return;
                 e.target.src = e.target.dataset.src
-            }}
+        }}
+
         on:exitViewport={e => {e.target.pause()}}
         bind:this={media}
         bind:playbackRate
@@ -176,13 +178,11 @@ bind:this={parent}
     </video>
     </div>
     <div class="relative" id="lower-block" class:invisible={!controlsVisiblity}>
-        <div class="absolute bottom-0 left-0 right-0 w-full my-2">
-            <div id="duration" class="flex mx-1">
-                {format(currentTime)}
+        <div class="absolute bottom-0 left-0 right-0 w-full">
+            <div id="seek" class="flex mx-1">
                 <input class="w-full mx-2" type="range" min="0" max={duration} title="Seek" step="0.01" bind:value={currentTime} />
-                {format(duration)}
             </div>
-            <div class="flex justify-between items-center px-1" title="Player Controls">
+            <div class="flex gap-0.5 p-0.5 align-center items-center cursor-pointer" title="Player Controls">
                 <button class="text-white rounded h-5 inline-block" title={paused? 'Play' : 'Pause'} on:click={() => {paused ? media.play() : media.pause()}}>{#if paused}<Play/> {:else} <Pause/> {/if}</button>
                 <div class="mx-2 text-white rounded inline-block" title="Playback Rate"
                 on:click={() => {playbackRate === 3.0 ? playbackRate=1 : playbackRate++}} role="button" tabindex="0"
@@ -192,6 +192,9 @@ bind:this={parent}
                  {#if media}
                 <VolumeButton {media}/>
                 {/if}
+                <div id="duration" class='grow p-2 mx-1'>
+                {format(currentTime)}/ {format(duration)}
+                </div>
                 <button class="text-white rounded h-5 mx-2" title="Full Screen" on:click={togglefullscreen}><FullScreen/></button>
             </div>
         </div>

@@ -79,14 +79,52 @@ async def get_links(server_id: int, channel_id: int, user_id: Optional[int] = No
     return data
 
 
+async def get_links_v2(server_id: int, channel_id: int,
+                       user_id: Optional[int] = None, images_only: bool = False,
+                       page: int = 1):
+    """
+    A new version of get_links that supports pagination
+    """
+    if not user_id:
+        return {'error': 'No user id provided'}
+    contents_per_page = 100
+    query_with_favourite = await app.db.execute(
+            "select media.link, favourite.favorite from media left join favourite on media.server_id = favourite.server_id and media.link = favourite.link and favourite.user_id = ? where media.server_id = ? and media.channel_id = ? limit ? offset ?",
+            (user_id, server_id, channel_id, contents_per_page, (page - 1) * contents_per_page))
+    resp = await query_with_favourite.fetchall()
+    query_for_total_pages = await app.db.execute(
+            "select count(*) from media where server_id = ? and channel_id = ?",
+            (server_id, channel_id))
+    total_pages = await query_for_total_pages.fetchone()
+    total_pages = total_pages[0] // contents_per_page + 1  # type: ignore
+    data = []
+    if images_only:
+        for link, favourite in resp:
+            if not favourite:
+                favourite = False
+            else:
+                favourite = True
+            if re.match(r'.*\.(png|jpg|jpeg|gif|webp)', link):
+                data.append({'link': link, 'favourite': favourite})
+        return {'data': data, 'total_pages': total_pages}
+    for link, favourite in resp:
+        if not favourite:
+            favourite = False
+        else:
+            favourite = True
+        if not re.match(r'.*\.(png|jpg|jpeg|gif|webp)', link):
+            data.append({'link': link, 'favourite': favourite})
+    return {'data': data, 'total_pages': total_pages}
+
+
 @app.get('/get/{server_id}/{channel_id}/videos')
-async def get_links_vids(server_id: int, channel_id: int, user_id: Optional[int] = None):
-    return await get_links(server_id, channel_id, user_id)
+async def get_links_vids(server_id: int, channel_id: int, user_id: Optional[int] = None, page: int = 1):
+    return await get_links_v2(server_id, channel_id, user_id, page=page)
 
 
 @app.get('/get/{server_id}/{channel_id}/images')
-async def get_links_imgs(server_id: int, channel_id: int, user_id: Optional[int] = None):
-    return await get_links(server_id, channel_id, user_id, images_only=True)
+async def get_links_imgs(server_id: int, channel_id: int, user_id: Optional[int] = None, page: int = 1):
+    return await get_links_v2(server_id, channel_id, user_id, images_only=True, page=page)
 
 
 @app.get('/modify/{server_id}/{channel_id}')

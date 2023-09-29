@@ -5,7 +5,7 @@
 
 <div class="flex justify-between items-center mb-2 opacity-80"
     style="background-color: #{data.accent_color? data.accent_color : 'cc0066'}">
-    <a href="..">
+    <a on:click={() => history.back()} href>
     {#if data.avatar}
     <img title="Go back"
         src={`//cdn.discordapp.com/avatars/${data.id}/${data.avatar}.jpg`}
@@ -20,7 +20,7 @@
     />
     {/if}
     </a>
-    <div class="ml-10 text-3xl">{data.global_name ?? ''}</div>
+    <div class="text-xl font-bold md:text-3xl">{data.global_name ?? ''}</div>
     <button
         class="bg-black text-white m-4 rounded-md text-center p-2"
         title="logout"
