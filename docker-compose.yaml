@@ -1,0 +1,68 @@
+version: "3.7"
+
+x-restart-policy: &restart_policy
+  restart: unless-stopped
+
+
+services:
+  ipc_server:
+    <<: *restart_policy
+    image: localhost/ipc_server
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: ipc_server
+    tty: true
+    replicas: 20
+    networks:
+      - eternal
+    expose:
+      - 80
+    volumes:
+      - media_db:/app
+
+  bot:
+    <<: *restart_policy
+    image: localhost/bot
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: bot
+    tty: true
+    networks:
+      - eternal
+    environment:
+      - TOKEN=MTA0NTY3MjEwNDAxNzc5NzE0MA.GuzdO3.3bUTRNPT1rvtFk3dxcfY2EL6ME4YymkE39E3sw
+    depends_on:
+      - ipc_server
+
+  web:
+    <<: *restart_policy
+    image: localhost/web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: web
+    replicas: 20
+    tty: true
+    networks:
+      - eternal
+    environment:
+      - IPC_DOMAIN=ipc_server
+      - CLIENT_ID=1141441374508548241
+      - CLIENT_SECRET=Fj0CQzeNricx350xBnWtp2xm0IGSkl0K
+      - REDIRECT_URI=http://ipc_server/callback
+      - ROLE_ID=1102482432449585182
+    depends_on:
+      - ipc_server
+    expose:
+      - 80
+    ports:
+      - 80:80
+
+networks:
+  eternal:
+      name: eternal
+
+volume:
+  media_db:

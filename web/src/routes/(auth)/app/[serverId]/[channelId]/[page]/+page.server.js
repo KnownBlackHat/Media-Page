@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { IPC_DOMAIN } from '$env/static/private';
+import { IPC_DOMAIN } from '$env/dynamic/private';
 
 const validateUserRole = async (token, roleId, serverId, fetch) => {
 	const resp = await fetch(`https://discord.com/api/v10/users/@me/guilds/${serverId}/member`, {

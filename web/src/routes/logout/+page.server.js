@@ -1,9 +1,9 @@
 import { redirect } from '@sveltejs/kit';
-import { CLIENT_ID, CLIENT_SECRET } from '$env/static/private';
+import { CLIENT_ID, CLIENT_SECRET } from '$env/dynamic/private';
 
 export async function load({ cookies, fetch }) {
 	const token = cookies.get('token');
-	if (!token) throw redirect(308, '/login');
+	if (!token) throw redirect(301, '/login');
 	const payload = {
 		client_id: CLIENT_ID,
 		client_secret: CLIENT_SECRET,
@@ -19,5 +19,5 @@ export async function load({ cookies, fetch }) {
 	});
 	if (rep.status === 200) cookies.delete('token');
 	cookies.delete('user_id');
-	throw redirect(308, '/');
+	throw redirect(301, '/');
 }

@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
-import { IPC_DOMAIN } from '$env/static/private';
+import { IPC_DOMAIN } from '$env/dynamic/private';
 
 export async function load({ params, fetch }) {
 	const resp = await fetch(`//${IPC_DOMAIN}/get/${params.serverId}`);

@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { IPC_DOMAIN } from '$env/static/private';
+import { IPC_DOMAIN } from '$env/dynamic/private';
 
 const get_user_guilds = async (fetch, token) => {
 	const user_guilds = await fetch('https://discord.com/api/v10/users/@me/guilds', {

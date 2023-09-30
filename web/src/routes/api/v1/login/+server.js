@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import axios from 'axios';
-import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from '$env/static/private';
+import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from '$env/dynamic/private';
 
 export async function POST({ request }) {
 	const response = await request.json();

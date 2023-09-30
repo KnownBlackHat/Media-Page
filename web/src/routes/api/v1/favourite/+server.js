@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import axios from 'axios';
-import { CLIENT_ID, IPC_DOMAIN } from '$env/static/private';
+import { CLIENT_ID, IPC_DOMAIN } from '$env/dynamic/private';
 
 export async function POST({ request, cookies }) {
 	const token = cookies.get('token');
