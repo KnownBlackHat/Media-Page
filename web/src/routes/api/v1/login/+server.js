@@ -16,8 +16,12 @@ export async function POST({ request }) {
 	};
 	const res = await axios.post('https://discord.com/api/oauth2/token', data, { headers });
 	const token = `${res.data.token_type} ${res.data.access_token}`;
-    const required_scope = ['identify', 'guilds.members.read', 'guilds']
-    const scopes = res.data.scope.split(' ');
-    scopes.forEach(v => {if (!required_scope.includes(v)) {throw error(405, "Insufficient Scopes")}})
+	const required_scope = ['identify', 'guilds.members.read', 'guilds'];
+	const scopes = res.data.scope.split(' ');
+	scopes.forEach((v) => {
+		if (!required_scope.includes(v)) {
+			throw error(405, 'Insufficient Scopes');
+		}
+	});
 	return json(token, { status: 200 });
 }
