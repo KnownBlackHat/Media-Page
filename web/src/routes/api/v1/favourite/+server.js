@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import axios from 'axios';
-import { CLIENT_ID, IPC_DOMAIN } from '$env/dynamic/private';
+import { env } from '$env/dynamic/private';
 
 export async function POST({ request, cookies }) {
 	const token = cookies.get('token');
@@ -16,11 +16,11 @@ export async function POST({ request, cookies }) {
 	if (resp.status !== 200) throw error(401, 'Unauthorized');
 
 	const { application, user } = resp.data;
-	if (application.id !== CLIENT_ID) throw error(401, 'Unauthorized');
+	if (application.id !== env.CLIENT_ID) throw error(401, 'Unauthorized');
 	if (!user?.id) throw error(401, 'Unauthorized');
 
 	const resp2 = await axios.get(
-		`//${IPC_DOMAIN}/modify/${serverId}/${userId}/favourite?link=${link}&mode=${mode}`
+		`//${env.IPC_DOMAIN}/modify/${serverId}/${userId}/favourite?link=${link}&mode=${mode}`
 	);
 	if (resp2.status !== 200) throw error(500, 'Internal Server Error');
 	return json({ success: true });

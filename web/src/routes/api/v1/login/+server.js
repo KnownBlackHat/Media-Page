@@ -1,15 +1,15 @@
 import { error, json } from '@sveltejs/kit';
 import axios from 'axios';
-import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from '$env/dynamic/private';
+import { env } from '$env/dynamic/private';
 
 export async function POST({ request }) {
 	const response = await request.json();
 	const data = {
-		client_id: CLIENT_ID,
-		client_secret: CLIENT_SECRET,
+		client_id: env.CLIENT_ID,
+		client_secret: env.CLIENT_SECRET,
 		grant_type: 'authorization_code',
 		code: response.code,
-		redirect_uri: REDIRECT_URI
+		redirect_uri: env.REDIRECT_URI
 	};
 	const headers = {
 		'Content-Type': 'application/x-www-form-urlencoded'

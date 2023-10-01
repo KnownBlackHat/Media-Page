@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { IPC_DOMAIN } from '$env/dynamic/private';
+import { env } from '$env/dynamic/private';
 
 const get_user_guilds = async (fetch, token) => {
 	const user_guilds = await fetch('https://discord.com/api/v10/users/@me/guilds', {
@@ -13,7 +13,7 @@ export async function load({ cookies, fetch, parent }) {
 	const token = cookies.get('token');
 	const user_info = await parent();
 	const user_guilds = await get_user_guilds(fetch, token);
-	const resp = await fetch(`//${IPC_DOMAIN}/get/servers`);
+	const resp = await fetch(`//${env.IPC_DOMAIN}/get/servers`);
 	const premium_guild = await resp.json();
 	const new_user_guilds = user_guilds.filter((guild) =>
 		premium_guild.includes(guild.id.toString())

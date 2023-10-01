@@ -1,46 +1,33 @@
 import { error } from '@sveltejs/kit';
-import { IPC_DOMAIN } from '$env/dynamic/private';
-
-const validateUserRole = async (token, roleId, serverId, fetch) => {
-	const resp = await fetch(`https://discord.com/api/v10/users/@me/guilds/${serverId}/member`, {
-		headers: { Authorization: token }
-	});
-	if (resp.status !== 200) {
-		return false;
-	}
-	const { roles } = await resp.json();
-	if (!roles.includes(roleId)) {
-		throw error(403, "You don't have premium membership");
-	}
-	return true;
-};
+import { env } from '$env/dynamic/private';
 
 export async function load({ params, fetch, cookies }) {
-	const token = cookies.get('token');
 	const user_id = cookies.get('user_id');
-	const resp = await fetch(`//${IPC_DOMAIN}/get/${params.serverId}/premium_role_id`);
-	const { id } = await resp.json();
-	if (!token || !id) throw error(403, "You don't have premium membership");
-	const validation = await validateUserRole(token, id, params.serverId, fetch);
-	if (!validation) throw error(403, "You don't have premium membership");
+
+	const response = await fetch(`/api/v1/validate?serverId=${params.serverId}`);
+
+	if (response.status !== 200) {
+		throw error(403, "you don't have premium membership");
+	}
+
 	let resp1_img;
 	let resp1_vid;
 	if (params.channelId === 'favourites') {
 		resp1_img = await fetch(
-			`//${IPC_DOMAIN}/get/${params.serverId}/${user_id}/favourites?images_only=true`
+			`//${env.IPC_DOMAIN}/get/${params.serverId}/${user_id}/favourites?images_only=true`
 		);
 		resp1_vid = await fetch(
-			`//${IPC_DOMAIN}/get/${params.serverId}/${user_id}/favourites?images_only=false`
+			`//${env.IPC_DOMAIN}/get/${params.serverId}/${user_id}/favourites?images_only=false`
 		);
 	} else {
 		resp1_img = await fetch(
-			`//${IPC_DOMAIN}/get/${params.serverId}/${params.channelId}/images?user_id=${user_id}&page=${params.page}`
+			`//${env.IPC_DOMAIN}/get/${params.serverId}/${params.channelId}/images?user_id=${user_id}&page=${params.page}`
 		);
 		resp1_vid = await fetch(
-			`//${IPC_DOMAIN}/get/${params.serverId}/${params.channelId}/videos?user_id=${user_id}&page=${params.page}`
+			`//${env.IPC_DOMAIN}/get/${params.serverId}/${params.channelId}/videos?user_id=${user_id}&page=${params.page}`
 		);
 	}
-	const resp2 = await fetch(`//${IPC_DOMAIN}/get/${params.serverId}`);
+	const resp2 = await fetch(`//${env.IPC_DOMAIN}/get/${params.serverId}`);
 	if (resp1_img.status !== 200 || resp1_vid.status !== 200 || resp2.status !== 200)
 		throw error(404);
 	const images_data = await resp1_img.json();

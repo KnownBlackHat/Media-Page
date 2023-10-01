@@ -3,7 +3,6 @@
 	import { page } from '$app/stores';
 	export let data;
 	let mediaType = 'videos';
-
 	$: current_page = Number($page.params.page);
 </script>
 
@@ -14,7 +13,7 @@
 	>
 		<a class="font-boldhover:text-xl text-sm capitalize" href={'favourites'}>favourites</a>
 		{#each data.channels as { name, id }}
-			<a class="font-bold underline text-sm capitalize" href={id}>{name}</a>
+			<a class="font-bold underline text-sm capitalize" href={'../' + id}>{name}</a>
 		{/each}
 	</div>
 </div>

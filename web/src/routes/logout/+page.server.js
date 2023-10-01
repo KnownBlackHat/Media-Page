@@ -1,12 +1,12 @@
 import { redirect } from '@sveltejs/kit';
-import { CLIENT_ID, CLIENT_SECRET } from '$env/dynamic/private';
+import { env } from '$env/dynamic/private';
 
 export async function load({ cookies, fetch }) {
 	const token = cookies.get('token');
 	if (!token) throw redirect(301, '/login');
 	const payload = {
-		client_id: CLIENT_ID,
-		client_secret: CLIENT_SECRET,
+		client_id: env.CLIENT_ID,
+		client_secret: env.CLIENT_SECRET,
 		token: token.split(' ')[1],
 		token_type: token.split(' ')[0]
 	};
@@ -19,5 +19,10 @@ export async function load({ cookies, fetch }) {
 	});
 	if (rep.status === 200) cookies.delete('token');
 	cookies.delete('user_id');
+	const resp = await fetch(`//${env.IPC_DOMAIN}/get/servers`);
+	const premium_guild = await resp.json();
+	premium_guild.forEach((guild) => {
+		cookies.delete('fphash', { path: `/app/${guild}` });
+	});
 	throw redirect(301, '/');
 }
