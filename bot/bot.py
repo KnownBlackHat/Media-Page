@@ -11,8 +11,7 @@ from urllib3.util import parse_url
 bot = commands.InteractionBot(intents=disnake.Intents.all())
 logger = logging.getLogger(__name__)
 console_handler = logging.StreamHandler()
-# DB_URl = 'http://localhost:8888'
-DB_URl = 'http://ipc_server'
+DB_URl = os.getenv('IPC_BASE_URI')
 http_client = httpx.AsyncClient()
 
 console_handler.setLevel(logging.INFO)
@@ -25,6 +24,22 @@ logging.basicConfig(
 
 async def insert(server_id: int, channel_id: int, url: str, channel_name: str):
     await http_client.get(f'{DB_URl}/modify/{server_id}/{channel_id}?link={url}&channel_name={channel_name}')
+
+
+def is_premium_owner():
+    def predicate(inter: disnake.GuildCommandInteraction) -> bool:
+        server = bot.get_guild(os.getenv('PREMIUM_SERVER_ID'))  # type: ignore
+        uid = inter.author.id
+        if not server or not os.getenv('PREMIUM_ROLE_ID'):
+            return False
+        elif member := server.get_member(uid):
+            if member.get_role(os.getenv('PREMIUM_ROLE_ID')):  # type: ignore
+                if not inter.author.guild_permissions.manage_guild:
+                    return False
+                return True
+        return False
+
+    return commands.check(predicate)  # type: ignore
 
 
 @bot.event
@@ -97,5 +112,30 @@ async def add_archive(inter: disnake.GuildCommandInteraction,
                      channel_name=channel.name,
                      url=url)
     await inter.send(f"{attachment.filename} added to {channel.mention}")
+
+
+@bot.event
+async def on_slash_command_error(inter: disnake.CommandInteraction, error):
+    if isinstance(error, commands.errors.CommandOnCooldown):
+        await inter.send(f"Command is on cooldown {error.retry_after:.2f} seconds")
+    elif isinstance(error, commands.errors.MissingPermissions):
+        await inter.send("You don't have the required permissions to run this command")
+    elif isinstance(error, commands.errors.NotOwner):
+        await inter.send("You are not the owner of this bot")
+    elif isinstance(error, commands.errors.MissingRequiredArgument):
+        await inter.send("Missing Required Argument")
+    elif isinstance(error, commands.errors.BadArgument):
+        await inter.send("Bad Argument")
+    elif isinstance(error, commands.errors.CommandNotFound):
+        await inter.send("Command Not Found")
+    elif isinstance(error, commands.errors.MissingRole):
+        await inter.send("You don't have the required role to run this command")
+    elif isinstance(error, commands.errors.CheckFailure):
+        await inter.send(
+            "Buy Premium to use this command. Check My Profile for server invite link from where you can buy premium"
+        )
+    else:
+        await inter.send(f"Something went wrong {error}")
+
 
 bot.run(os.getenv('TOKEN'))

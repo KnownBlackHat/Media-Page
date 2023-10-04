@@ -35,7 +35,10 @@ services:
       dockerfile: Dockerfile
     tty: true
     environment:
-      - TOKEN=TOKEN_HERE
+      - TOKEN=YOUR_BOT_TOKEN_HERE
+      - IPC_BASE_URI=http://ipc_server
+      - PREMIUM_ROLE_ID=YOUR_PREMIUM_ROLE_ID
+      - PREMIUM_SERVER_ID=YOUR_SERVER_ID
     depends_on:
       - ipc_server
 
