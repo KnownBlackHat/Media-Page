@@ -1,8 +1,10 @@
 from typing import Literal, Optional
+import os
 import re
 
 from fastapi import FastAPI
 import aiosqlite
+import asyncio
 
 
 class CustomFastAPI(FastAPI):
@@ -14,7 +16,7 @@ app = CustomFastAPI()
 
 @app.on_event('startup')
 async def start():
-    app.db = await aiosqlite.connect('media.db')
+    app.db = await aiosqlite.connect('/db/media.db')
     await app.db.execute("create table if not exists servers (server_id bigint, premium_role_id bigint)")
     await app.db.execute("create table if not exists registered_channels (server_id bigint, channel_id bigint)")
     await app.db.execute("create table if not exists channels (server_id bigint, channel_id bigint, channel_name text)")
@@ -251,3 +253,16 @@ async def get_registered(server_id: int, channel_id: int):
         return {'success': True}
     else:
         return {'success': False, 'error': 'Channel not registered'}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    async def main():
+        config = uvicorn.Config("main:app", host="0.0.0.0", port=80, log_level="info",
+                                workers=(cpu if (cpu := os.cpu_count()) else 1) * 2 + 1)
+        server = uvicorn.Server(config)
+        await server.serve()
+
+    if __name__ == "__main__":
+        asyncio.run(main())

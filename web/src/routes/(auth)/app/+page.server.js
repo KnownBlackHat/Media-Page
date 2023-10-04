@@ -13,7 +13,7 @@ export async function load({ cookies, fetch, parent }) {
 	const token = cookies.get('token');
 	const user_info = await parent();
 	const user_guilds = await get_user_guilds(fetch, token);
-	const resp = await fetch(`//${env.IPC_DOMAIN}/get/servers`);
+	const resp = await fetch(`http://${env.IPC_DOMAIN}/get/servers`);
 	const premium_guild = await resp.json();
 	const new_user_guilds = user_guilds.filter((guild) =>
 		premium_guild.includes(guild.id.toString())

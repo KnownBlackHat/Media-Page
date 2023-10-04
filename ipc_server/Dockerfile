@@ -8,5 +8,4 @@ COPY . .
 
 RUN pip install -r requirements.txt
 
-
-ENTRYPOINT ["python3", "-m", "uvicorn", "main:app", "--port", "80"]
+ENTRYPOINT ["python3", "main.py"]

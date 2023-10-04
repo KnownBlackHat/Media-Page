@@ -19,7 +19,7 @@ export async function load({ cookies, fetch }) {
 	});
 	if (rep.status === 200) cookies.delete('token');
 	cookies.delete('user_id');
-	const resp = await fetch(`//${env.IPC_DOMAIN}/get/servers`);
+	const resp = await fetch(`http://${env.IPC_DOMAIN}/get/servers`);
 	const premium_guild = await resp.json();
 	premium_guild.forEach((guild) => {
 		cookies.delete('fphash', { path: `/app/${guild}` });

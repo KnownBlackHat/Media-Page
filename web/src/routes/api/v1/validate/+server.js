@@ -20,7 +20,7 @@ export async function GET({ cookies, fetch, url }) {
 	const token = cookies.get('token');
 	const userid = cookies.get('user_id');
 	const serverId = url.searchParams.get('serverId');
-	const resp = await fetch(`//${env.IPC_DOMAIN}/get/${serverId}/premium_role_id`);
+	const resp = await fetch(`http://${env.IPC_DOMAIN}/get/${serverId}/premium_role_id`);
 	const { id } = await resp.json();
 	if (!token || !id) throw error(403, "You don't have premium membership");
 	const fphash = cookies.get('fphash');

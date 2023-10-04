@@ -20,7 +20,7 @@ export async function POST({ request, cookies }) {
 	if (!user?.id) throw error(401, 'Unauthorized');
 
 	const resp2 = await axios.get(
-		`//${env.IPC_DOMAIN}/modify/${serverId}/${userId}/favourite?link=${link}&mode=${mode}`
+		`http://${env.IPC_DOMAIN}/modify/${serverId}/${userId}/favourite?link=${link}&mode=${mode}`
 	);
 	if (resp2.status !== 200) throw error(500, 'Internal Server Error');
 	return json({ success: true });

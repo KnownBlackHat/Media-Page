@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:18-slim
 
 WORKDIR /app
 
@@ -6,8 +6,6 @@ COPY . .
 
 RUN npm install
 
-CMD "npm build"
-
-EXPOSE 3000
+RUN npm run build
 
 ENTRYPOINT ["node", "build"]

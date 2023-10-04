@@ -11,7 +11,8 @@ from urllib3.util import parse_url
 bot = commands.InteractionBot(intents=disnake.Intents.all())
 logger = logging.getLogger(__name__)
 console_handler = logging.StreamHandler()
-DB_URl = 'http://localhost:8888'
+# DB_URl = 'http://localhost:8888'
+DB_URl = 'http://ipc_server'
 http_client = httpx.AsyncClient()
 
 console_handler.setLevel(logging.INFO)

@@ -9,17 +9,15 @@ services:
     <<: *restart_policy
     image: localhost/ipc_server
     build:
-      context: ./db
+      context: ./ipc_server
       dockerfile: Dockerfile
     container_name: ipc_server
     tty: true
-    replicas: 20
     networks:
-      - eternal
-    expose:
-      - 80
+      eternal:
+        ipv4_address: 172.20.0.2
     volumes:
-      - media_db:/app
+      - .:/db
 
   bot:
     <<: *restart_policy
@@ -30,9 +28,10 @@ services:
     container_name: bot
     tty: true
     networks:
-      - eternal
+      eternal:
+        ipv4_address: 172.20.0.3
     environment:
-      - TOKEN=MTA0NTY3MjEwNDAxNzc5NzE0MA.GuzdO3.3bUTRNPT1rvtFk3dxcfY2EL6ME4YymkE39E3sw
+      - TOKEN=TOKEN_HERE
     depends_on:
       - ipc_server
 
@@ -43,26 +42,26 @@ services:
       context: ./web
       dockerfile: Dockerfile
     container_name: web
-    replicas: 20
     tty: true
-    networks:
-      - eternal
     environment:
-      - IPC_DOMAIN=ipc_server
-      - CLIENT_ID=1141441374508548241
-      - CLIENT_SECRET=Fj0CQzeNricx350xBnWtp2xm0IGSkl0K
-      - REDIRECT_URI=http://ipc_server/callback
-      - ROLE_ID=1102482432449585182
+      - IPC_DOMAIN=172.20.0.2
+      - CLIENT_ID=CLIENT_ID_HERE
+      - CLIENT_SECRET=CLIENT_SECRET_HERE
+      - REDIRECT_URI=http://localhost/callback
+      - SIGN_PASS=JWT_SIGN_PASSPHRASE
+    networks:
+      eternal:
+        ipv4_address: 172.20.0.4
     depends_on:
       - ipc_server
-    expose:
-      - 80
     ports:
-      - 80:80
+      - 80:3000
 
 networks:
   eternal:
-      name: eternal
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
 
-volume:
+volumes:
   media_db:
