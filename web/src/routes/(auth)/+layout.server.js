@@ -15,7 +15,7 @@ export async function load({ cookies, fetch }) {
 	} else {
 		const user_info = await get_user_info(fetch, token);
 		const { id } = user_info;
-		cookies.set('user_id', id, { path: '/' });
+		cookies.set('user_id', id, { sameSite: 'none', path: '/' });
 		return user_info;
 	}
 }
