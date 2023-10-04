@@ -6,12 +6,11 @@ x-restart-policy: &restart_policy
 
 services:
   load_balancer:
-    image: localhost/nginx
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+    image: nginx:latest
     ports:
       - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - web
       - ipc_server
@@ -24,7 +23,9 @@ services:
       dockerfile: Dockerfile
     tty: true
     volumes:
-      - .:/db
+      - type: bind
+        source: ./ipc_server/media.db
+        target: /db/media.db
 
   bot:
     <<: *restart_policy
@@ -47,8 +48,8 @@ services:
     tty: true
     environment:
       - IPC_DOMAIN=ipc_server
-      - CLIENT_ID=YOUR_CLIENT_ID
-      - CLIENT_SECRET=YOUR_CLIENT_SECRET_HERE
+      - CLIENT_ID=CLIENT_ID_HERE
+      - CLIENT_SECRET=CLIENT_SECRET_HERE
       - REDIRECT_URI=http://localhost/callback
       - SIGN_PASS=JWT_SIGN_PASSPHRASE
     depends_on:
