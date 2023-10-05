@@ -184,6 +184,7 @@
 					async
 					class="h-60 w-full rounded bg-black"
 					data-src={src}
+                    poster={`${src.replace(/(cdn\.discordapp.com)/, 'media.discordapp.net')}?format=jpeg`}
 					media-id={index}
 					preload="auto"
 					playsinline
