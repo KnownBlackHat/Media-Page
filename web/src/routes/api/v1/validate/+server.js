@@ -66,7 +66,7 @@ export async function GET({ cookies, fetch, url }) {
 			},
 			env.SIGN_PASS
 		);
-		cookies.set('fphash', nfphash, { sameSite: 'none', path: `/app/${serverId}` });
+		cookies.set('fphash', nfphash, { sameSite: 'None', secure: false, path: `/app/${serverId}` });
 	}
 	return json({ success: true });
 }

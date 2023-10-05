@@ -14,7 +14,7 @@ export async function load({ cookies, fetch, request }) {
 		body: JSON.stringify({ code: code })
 	});
 	if (resp.status === 200) {
-		cookies.set('token', await resp.json(), { sameSite: 'none', path: '/' });
+		cookies.set('token', await resp.json(), {  sameSite: 'None', secure: false, path: '/' });
 		throw redirect(307, '/');
 	}
 	throw redirect(307, '/');
