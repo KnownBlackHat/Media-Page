@@ -44,7 +44,8 @@ def is_premium_owner():
 
 @bot.event
 async def on_message(msg: disnake.Message):
-    if msg.guild and msg.attachments and not isinstance(msg.channel, disnake.DMChannel):
+    if msg.guild and msg.attachments and not isinstance(msg.channel,
+                                                        disnake.DMChannel):
         url = f'{DB_URl}/get/{msg.guild.id}/{msg.channel.id}/registered'
         if msg.channel.type == disnake.ChannelType.public_thread or msg.channel.type == disnake.ChannelType.private_thread:
             url = f'{DB_URl}/get/{msg.guild.id}/{msg.channel.parent_id}/registered'
@@ -61,8 +62,17 @@ async def on_message(msg: disnake.Message):
                              url=attachment.url)
 
 
-@bot.slash_command(name="set_premium_role")
-async def set_premium_role(inter: disnake.GuildCommandInteraction, role: disnake.Role):
+@bot.slash_command(name="register")
+@is_premium_owner()
+async def register(inter: disnake.GuildCommandInteraction):
+    """
+    Register Command group
+    """
+
+
+@register.sub_command(name="role")
+async def set_premium_role(inter: disnake.GuildCommandInteraction,
+                           role: disnake.Role):
     """
     Register the premium role
 
@@ -74,9 +84,11 @@ async def set_premium_role(inter: disnake.GuildCommandInteraction, role: disnake
     await inter.send(f"{role.mention} registered successfully")
 
 
-@bot.slash_command(name='register')
-async def register(inter: disnake.GuildCommandInteraction,
-                   channel: Union[disnake.TextChannel, disnake.ForumChannel, disnake.CategoryChannel]):
+@register.sub_command(name='channel')
+async def set_channel(inter: disnake.GuildCommandInteraction,
+                      channel: Union[disnake.TextChannel,
+                                     disnake.ForumChannel,
+                                     disnake.CategoryChannel]):
     """
     Register a channel to receive attachments
 
@@ -91,10 +103,12 @@ async def register(inter: disnake.GuildCommandInteraction,
     await inter.send(f"{channel.mention} registered successfully")
 
 
+@commands.is_owner()
 @bot.slash_command(name='add_archive')
 async def add_archive(inter: disnake.GuildCommandInteraction,
                       attachment: disnake.Attachment,
-                      channel: disnake.TextChannel):
+                      channel: Union[disnake.TextChannel, disnake.ForumChannel,
+                                     disnake.Thread]):
     """
     Add an attachment to the archive
 
