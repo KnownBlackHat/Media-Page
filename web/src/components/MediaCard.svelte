@@ -78,7 +78,7 @@
 	on:pointermove={unhideControls}
 	on:touchstart={unhideControls}
 	on:keydown={(e) => {
-        if (!media) return
+        if (!media?.play()) return
 		unhideControls();
 		switch (e.key) {
 			case 'f':
