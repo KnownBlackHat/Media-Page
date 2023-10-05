@@ -11,9 +11,16 @@
 	<div
 		class="flex items-center text-center list text-xg justify-between flex-wrap p-3 rounded-lg space-x-5 sticky top-0"
 	>
-		<a class="font-boldhover:text-xl text-sm capitalize" href={'favourites'}>favourites</a>
+    <span/>
+		<a class="font-boldhover:text-xl text-sm capitalize hover:text-black rounded-lg p-2 hover:bg-white" href={'../favourites'}
+        class:text-black={$page.params.page === 'favourites'}
+        class:bg-white={$page.params.page === 'favourites'}
+        >favourites</a>
 		{#each data.channels as { name, id }}
-			<a class="font-bold underline text-sm capitalize" href={'../' + id}>{name}</a>
+			<a class="font-bold underline text-sm capitalize hover:text-black rounded-lg p-2 hover:bg-white" href={'../' + id}
+            class:text-black={$page.params.channelId === id}
+            class:bg-white={$page.params.channelId === id}
+            >{name}</a>
 		{/each}
 	</div>
 </div>
@@ -23,7 +30,6 @@
 		title="page index"
 		class="flex items-center text-center list text-xl justify-between overflow-y-scroll bg-black text-white p-3 rounded-lg space-x-5"
 	>
-		<span />
 		{#each Array(data.total_pages) as _, idx}
 			<a
 				href={idx + 1}
@@ -66,3 +72,4 @@
 		<div class="bg-black text-2xl font-bold py-40 px-48 rounded-lg">No Content Available</div>
 	</div>
 {/if}
+

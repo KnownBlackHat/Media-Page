@@ -16,6 +16,31 @@ const validateUserRole = async (token, roleId, serverId, fetch) => {
 	return true;
 };
 
+const sign_jwt = async (token, serverId, id, cookies, fetch) => {
+		const validation = await validateUserRole(token, id, serverId, fetch);
+		if (!validation) throw error(403, "You don't have premium membership");
+
+		const user_info = await fetch('https://discord.com/api/v10/users/@me', {
+			headers: { Authorization: token }
+		});
+        let premium = true;
+		if (user_info.status !== 200) premium = false;
+		const userId = await user_info.json();
+		const nfphash = jwt.sign(
+			{
+				dtoken: token,
+				server_id: serverId,
+				role_id: id,
+				is_premium: premium,
+				user_id: userId.id,
+				cookie_path: `/app/${serverId}`,
+				exp: Math.floor(Date.now() / 1000) + 3600
+			},
+			env.SIGN_PASS
+		);
+		cookies.set('fphash', nfphash, { sameSite: 'Lax', secure: false, path: `/app/${serverId}` });
+}
+
 export async function GET({ cookies, fetch, url }) {
 	const token = cookies.get('token');
 	const userid = cookies.get('user_id');
@@ -43,30 +68,14 @@ export async function GET({ cookies, fetch, url }) {
 			}
 		} catch (err) {
 			cookies.delete('fphash', { path: `/app/${serverId}` });
+            if (err.name === 'TokenExpiredError') {
+                await sign_jwt(token, serverId, id, cookies, fetch);
+            } else {
 			throw error(401, 'Unauthorized');
+            }
 		}
 	} else {
-		const validation = await validateUserRole(token, id, serverId, fetch);
-		if (!validation) throw error(403, "You don't have premium membership");
-
-		const user_info = await fetch('https://discord.com/api/v10/users/@me', {
-			headers: { Authorization: token }
-		});
-		if (user_info.status !== 200) throw error(401, 'Unauthorized');
-		const userId = await user_info.json();
-		const nfphash = jwt.sign(
-			{
-				dtoken: token,
-				server_id: serverId,
-				role_id: id,
-				is_premium: true,
-				user_id: userId.id,
-				cookie_path: `/app/${serverId}`,
-				expiresIn: '1h'
-			},
-			env.SIGN_PASS
-		);
-		cookies.set('fphash', nfphash, { sameSite: 'None', secure: false, path: `/app/${serverId}` });
+        await sign_jwt(token, serverId, id, cookies, fetch);
 	}
 	return json({ success: true });
 }

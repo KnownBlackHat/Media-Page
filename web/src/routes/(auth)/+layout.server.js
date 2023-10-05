@@ -4,7 +4,7 @@ const get_user_info = async (fetch, token) => {
 	const user_info = await fetch('https://discord.com/api/v10/users/@me', {
 		headers: { Authorization: token }
 	});
-	if (user_info.status !== 200) throw redirect(301, '/login');
+	if (user_info.status !== 200) throw redirect(307, '/login');
 	return await user_info.json();
 };
 
@@ -15,7 +15,7 @@ export async function load({ cookies, fetch }) {
 	} else {
 		const user_info = await get_user_info(fetch, token);
 		const { id } = user_info;
-		cookies.set('user_id', id, { sameSite: 'None', secure: false, path: '/' });
+		cookies.set('user_id', id, { sameSite: 'Lax', secure: false, path: '/' });
 		return user_info;
 	}
 }
