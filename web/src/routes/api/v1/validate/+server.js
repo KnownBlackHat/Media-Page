@@ -34,7 +34,7 @@ const sign_jwt = async (token, serverId, id, cookies, fetch) => {
 				is_premium: premium,
 				user_id: userId.id,
 				cookie_path: `/app/${serverId}`,
-				exp: Math.floor(Date.now() / 1000) + 3600
+				exp: premium? Math.floor(Date.now() / 1000) + 3600 : Math.floor(Date.now() / 1000) + 600
 			},
 			env.SIGN_PASS
 		);

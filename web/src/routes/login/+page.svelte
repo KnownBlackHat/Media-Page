@@ -13,6 +13,6 @@
 			goto(
 				`https://discord.com/api/oauth2/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&callback&response_type=code&scope=${scopes}`
 			);
-		}}>Discord Auth</button
+		}}>Login With Discord</button
 	>
 </div>

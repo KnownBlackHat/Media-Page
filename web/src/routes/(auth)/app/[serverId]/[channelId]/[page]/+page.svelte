@@ -28,7 +28,7 @@
 {#if data.images?.length > 0 || data.videos?.length > 0}
 	<div
 		title="page index"
-		class="flex items-center text-center list text-xl justify-between overflow-y-scroll bg-black text-white p-3 rounded-lg space-x-5"
+		class="flex overflow-x-hidden items-center text-center list text-xl justify-between overflow-y-scroll bg-black text-white p-3 rounded-lg space-x-5"
 	>
 		{#each Array(data.total_pages) as _, idx}
 			<a
