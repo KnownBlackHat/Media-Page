@@ -28,12 +28,12 @@ async def insert(server_id: int, channel_id: int, url: str, channel_name: str):
 
 def is_premium_owner():
     def predicate(inter: disnake.GuildCommandInteraction) -> bool:
-        server = bot.get_guild(os.getenv('PREMIUM_SERVER_ID'))  # type: ignore
+        server = bot.get_guild(int(os.getenv('PREMIUM_SERVER_ID')))  # type: ignore
         uid = inter.author.id
-        if not server or not os.getenv('PREMIUM_ROLE_ID'):
+        if not server or not int(os.getenv('PREMIUM_ROLE_ID')):  # type: ignore
             return False
         elif member := server.get_member(uid):
-            if member.get_role(os.getenv('PREMIUM_ROLE_ID')):  # type: ignore
+            if member.get_role(int(os.getenv('PREMIUM_ROLE_ID'))):  # type: ignore
                 if not inter.author.guild_permissions.manage_guild:
                     return False
                 return True
