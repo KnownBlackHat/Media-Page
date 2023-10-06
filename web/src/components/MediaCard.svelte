@@ -224,14 +224,14 @@
 				</video>
 				<div
 					id="loading"
-					class="absolute top-0 left-0 right-0 z-50 bottom-0 flex justify-center items-center bg-black bg-opacity-50"
+					class="absolute top-0 left-0 right-0 bottom-0 z-10 flex justify-center items-center bg-black bg-opacity-50"
 					class:invisible={!loading}
 				>
 					<div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500" />
 				</div>
 			</div>
 			<div class="relative" id="lower-block" class:invisible={!controlsVisiblity}>
-				<div class="absolute bottom-0 left-0 right-0 w-full">
+				<div class="absolute bottom-0 left-0 right-0 w-full z-50">
 					<div id="seek" class="flex mx-1">
 						<input
 							class="w-full mx-2"
