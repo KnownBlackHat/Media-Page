@@ -98,7 +98,7 @@ async def set_channel(inter: disnake.GuildCommandInteraction,
     """
     if isinstance(channel, disnake.CategoryChannel):
         for chnl in channel.channels:
-            await register(inter, chnl)
+            await set_channel(inter, chnl)
     await http_client.get(f'{DB_URl}/modify/{inter.guild.id}/{channel.id}/register')
     await inter.send(f"{channel.mention} registered successfully")
 
