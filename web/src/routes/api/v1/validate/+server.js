@@ -11,34 +11,36 @@ const validateUserRole = async (token, roleId, serverId, fetch) => {
 	}
 	const { roles } = await resp.json();
 	if (!roles.includes(roleId)) {
-		throw error(403, "You don't have premium membership");
+        return false;
 	}
 	return true;
 };
 
 const sign_jwt = async (token, serverId, id, cookies, fetch) => {
-		const validation = await validateUserRole(token, id, serverId, fetch);
-		if (!validation) throw error(403, "You don't have premium membership");
+    let premium = true;
+    const validation = await validateUserRole(token, id, serverId, fetch);
+    if (!validation) premium=false
 
-		const user_info = await fetch('https://discord.com/api/v10/users/@me', {
-			headers: { Authorization: token }
-		});
-        let premium = true;
-		if (user_info.status !== 200) premium = false;
-		const userId = await user_info.json();
-		const nfphash = jwt.sign(
-			{
-				dtoken: token,
-				server_id: serverId,
-				role_id: id,
-				is_premium: premium,
-				user_id: userId.id,
-				cookie_path: `/app/${serverId}`,
-				exp: premium? Math.floor(Date.now() / 1000) + 3600 : Math.floor(Date.now() / 1000) + 600
-			},
-			env.SIGN_PASS
-		);
-		cookies.set('fphash', nfphash, { sameSite: 'Lax', secure: false, path: `/app/${serverId}` });
+    const user_info = await fetch('https://discord.com/api/v10/users/@me', {
+        headers: { Authorization: token }
+    });
+    if (user_info.status !== 200) premium = false;
+    const userId = await user_info.json();
+    const nfphash = jwt.sign(
+        {
+            dtoken: token,
+            server_id: serverId,
+            role_id: id,
+            is_premium: premium,
+            user_id: userId.id,
+            cookie_path: `/app/${serverId}`,
+            exp: premium? Math.floor(Date.now() / 1000) + 3600 : Math.floor(Date.now() / 1000) + 600
+        },
+        env.SIGN_PASS
+    );
+    cookies.set('fphash', nfphash, { sameSite: 'Lax', secure: false, path: `/app/${serverId}` });
+    if (!premium) throw error(403, "You don't have premium access")
+
 }
 
 export async function GET({ cookies, fetch, url }) {
