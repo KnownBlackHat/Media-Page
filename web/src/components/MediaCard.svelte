@@ -114,7 +114,7 @@
 >
 	<div>
 		<div class="relative" id="top-block">
-			<div class="absolute top-0 right-0 p-1" class:invisible={!controlsVisiblity}>
+			<div class="absolute top-0 right-0 p-1 z-50" class:invisible={!controlsVisiblity}>
 				<button
 					title="Download"
 					class="text-white p-1 rounded h-10"
@@ -128,7 +128,7 @@
 			{#if notification}
 				<div
 					id="Notification"
-					class="flex justify-center items-center absolute bg-black top-96 rounded h-20 opacity-50 text-2xl left-[50%] p-3"
+					class="flex justify-center items-center absolute bg-black top-96 rounded h-20 opacity-50 text-2xl left-[50%] p-3 z-50"
 				>
 					{#if notification === 'Playing'}
 						<Play />
@@ -143,10 +143,10 @@
 					{/if}
 				</div>
 			{/if}
-			<div class="absolute top-0 left-0 p-1" class:invisible={!controlsVisiblity}>
+			<div class="absolute top-0 left-0 p-1 z-50" class:invisible={!controlsVisiblity}>
 				<button
 					title="Favourite"
-					class="text-white p-1 rounded h-10 text-red-500"
+					class="text-white p-1 rounded h-10"
 					on:click={() => {}}><Favourite {src} {favourite} /></button
 				>
 			</div>
@@ -224,7 +224,7 @@
 				</video>
 				<div
 					id="loading"
-					class="absolute top-0 left-0 right-0 z-90 bottom-0 flex justify-center items-center bg-black bg-opacity-50"
+					class="absolute top-0 left-0 right-0 z-50 bottom-0 flex justify-center items-center bg-black bg-opacity-50"
 					class:invisible={!loading}
 				>
 					<div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500" />
