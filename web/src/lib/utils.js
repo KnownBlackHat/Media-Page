@@ -6,6 +6,8 @@ export const get_user_info = async (fetch, token) => {
 		headers: { Authorization: token }
 	});
 	if (user_info.status !== 200) throw redirect(307, '/login');
-	return await user_info.json();
+	const data = await user_info.json();
+    data.status = user_info.status;
+    return data
 };
 

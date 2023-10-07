@@ -27,7 +27,7 @@ const validateUserRolev2 = async (token, roleId, serverId, fetch) => {
 		return false;
 	}
 	const { roles } = await resp.json();
-	if (!roles.includes(roleId)) {
+	if (!roles.includes(`${roleId}`)) {
         return false;
 	}
 	return true;
