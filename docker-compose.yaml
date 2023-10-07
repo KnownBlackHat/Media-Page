@@ -50,6 +50,7 @@ services:
       dockerfile: Dockerfile
     tty: true
     environment:
+      - BOT_TOKEN=YOUR_BOT_TOKEN_HERE
       - IPC_DOMAIN=ipc_server
       - CLIENT_ID=CLIENT_ID_HERE
       - CLIENT_SECRET=CLIENT_SECRET_HERE

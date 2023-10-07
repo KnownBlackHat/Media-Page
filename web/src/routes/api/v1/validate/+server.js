@@ -1,10 +1,27 @@
 import { error, json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import  { get_user_info } from '$lib/utils.js';
 import jwt from 'jsonwebtoken';
 
-const validateUserRole = async (token, roleId, serverId, fetch) => {
-	const resp = await fetch(`https://discord.com/api/v10/users/@me/guilds/${serverId}/member`, {
-		headers: { Authorization: token }
+// const validateUserRole = async (token, roleId, serverId, fetch) => {
+// 	const resp = await fetch(`https://discord.com/api/v10/users/@me/guilds/${serverId}/member`, {
+// 		headers: { Authorization: token }
+// 	});
+// 	if (resp.status !== 200) {
+// 		return false;
+// 	}
+// 	const { roles } = await resp.json();
+// 	if (!roles.includes(roleId)) {
+//         return false;
+// 	}
+// 	return true; };
+
+
+const validateUserRolev2 = async (token, roleId, serverId, fetch) => {
+    const user_info = await get_user_info(fetch, token);
+    const userid = user_info.id;
+	const resp = await fetch(`https://discord.com/api/v10/guilds/${serverId}/members/${userid}`, {
+		headers: { Authorization: `Bot ${env.BOT_TOKEN}` }
 	});
 	if (resp.status !== 200) {
 		return false;
@@ -18,21 +35,18 @@ const validateUserRole = async (token, roleId, serverId, fetch) => {
 
 const sign_jwt = async (token, serverId, id, cookies, fetch) => {
     let premium = true;
-    const validation = await validateUserRole(token, id, serverId, fetch);
+    const validation = await validateUserRolev2(token, id, serverId, fetch);
     if (!validation) premium=false
 
-    const user_info = await fetch('https://discord.com/api/v10/users/@me', {
-        headers: { Authorization: token }
-    });
+    const user_info = await get_user_info(fetch, token);
     if (user_info.status !== 200) premium = false;
-    const userId = await user_info.json();
     const nfphash = jwt.sign(
         {
             dtoken: token,
             server_id: serverId,
             role_id: id,
             is_premium: premium,
-            user_id: userId.id,
+            user_id: user_info.id,
             cookie_path: `/app/${serverId}`,
             exp: premium? Math.floor(Date.now() / 1000) + 3600 : Math.floor(Date.now() / 1000) + 600
         },
@@ -45,7 +59,7 @@ const sign_jwt = async (token, serverId, id, cookies, fetch) => {
 
 export async function GET({ cookies, fetch, url }) {
 	const token = cookies.get('token');
-	const userid = cookies.get('user_id');
+    const user_info = await get_user_info(fetch, token);
 	const serverId = url.searchParams.get('serverId');
 	const resp = await fetch(`http://${env.IPC_DOMAIN}/get/${serverId}/premium_role_id`);
 	const { id } = await resp.json();
@@ -60,7 +74,7 @@ export async function GET({ cookies, fetch, url }) {
 				server_id === serverId &&
 				dtoken === token &&
 				is_premium === true &&
-				user_id === userid &&
+				user_id === user_info.id &&
 				cookie_path === `/app/${serverId}`
 			) {
 				return json({ success: true });
